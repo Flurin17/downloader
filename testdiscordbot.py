@@ -7,7 +7,7 @@ import time
 from SynDSapi import *
 from modules import *
 import os
-testing
+import bs4
 
 client = commands.Bot(command_prefix='!')
 @client.command(pass_context = True)
