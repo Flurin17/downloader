@@ -145,8 +145,8 @@ def chosenSeriesEmbed(movietitle, movieposter, imdb, season,  ctx):
         description= "",
         color=discord.Color.green()
         )
-    embed.set_author(name="Season chosen")
-    embed.add_field(name="Season", value=movietitle)
+    embed.set_author(name="Series and Season chosen")
+    embed.add_field(name="Series", value=movietitle)
     embed.add_field(name="IMDB", value="[{0}](https://www.imdb.com/title/{0}/)".format(imdb))
     embed.add_field(name="Season", value=season)
     embed.set_thumbnail(url=movieposter)

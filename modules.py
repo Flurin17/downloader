@@ -119,7 +119,7 @@ def imdbSeriesSearchSeason(imdbID):
         seasons.append(seasonnumber)
     print(seasons)
     return seasons
-def rarbgsearch(imdbID):
+def rarbgsearchmovie(imdbID):
     agent = {"User-Agent":'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'}
     session = requests.Session()
     torrentapi = "https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=rarbgapi"
@@ -148,11 +148,40 @@ def rarbgsearch(imdbID):
     else:
         return downloadlinks
 
+def rarbgsearchseries(imdbID):
+    agent = {"User-Agent":'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'}
+    session = requests.Session()
+    torrentapi = "https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=rarbgapi"
+    notworked = True
+    count = 0
+    token = session.get(torrentapi, headers=agent).text
+    token = json.loads(token)
+    token = token["token"]
+    print(token)
+    time.sleep(2.1)
+    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&sort=seeders&category=41&format=json_extended&token={1}&app_id=rarbgapi".format(imdbID, token)
+
+    while notworked and count < 5:
+        searchurlresponse = session.get(searchurl, headers=agent)
+        print(searchurl)
+        searchurljson = json.loads(searchurlresponse.text)
+        try:
+            downloadlinks = searchurljson["torrent_results"]
+            notworked = False
+            print("Movies have been found")
+        except:
+            time.sleep(2.1)
+            count += 1 
+    if notworked:
+        return "404 No Movies have been found"
+    else:
+        return downloadlinks
+
 def getmagnet(imdbID):
     scores =[]
     print(imdbID)
 
-    downloadlinks = rarbgsearch(imdbID)
+    downloadlinks = rarbgsearchmovie(imdbID)
     if downloadlinks == "404 No Movies have been found":
         return
     
@@ -198,8 +227,8 @@ def getmagnet(imdbID):
 def getSeries(imdbID, season):
     scores =[]
     print(imdbID)
-
-    downloadlinks = rarbgsearch(imdbID)
+    print("User has chosen season {0}".format(season))
+    downloadlinks = rarbgsearchseries(imdbID)
     if downloadlinks == "404 No Movies have been found":
         return
 
@@ -207,8 +236,9 @@ def getSeries(imdbID, season):
         downloadSize = torrent["size"]
         seeders = torrent["seeders"]
         seriesTitle = torrent["episode_info"]["title"]
-
-        if seriesTitle is "Season Pack {0}".format(season):
+        print(seeders)
+        print(seriesTitle)
+        if "Season Pack {0}".format(season) in seriesTitle :
             scores.append(seeders)
         else:
             scores.append(0)
@@ -223,7 +253,7 @@ def getSeries(imdbID, season):
     downloadsize =  str(round((downloadlinks[position]["size"]/1000000000),2))
     downloadpage = downloadlinks[position]["info_page"]
     print(downloadname)
-
+    print(scores)
     return downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers
 
         

@@ -106,6 +106,7 @@ async def season(ctx, *args):
         except:
             await ctx.send("Please provide a valid Option")
         if optionchoosenSeries <= len(seasons) and optionchoosenSeries >= 1:
+            optionchoosenSeries = optionchoosenSeries -1
             embed = chosenSeriesEmbed(seriestitles[optionchoosen], seriesposters[optionchoosen], imdbIDs[optionchoosen], seasons[optionchoosenSeries], ctx)
             await ctx.send(embed=embed)
         else:
