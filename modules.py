@@ -22,9 +22,9 @@ def checkplex():
 def imdbsearch(movie):
     url = "https://imdb8.p.rapidapi.com/title/find"
     querystring = {"q":"{0}".format(movie)}
-    filmeplex =checkplex()
+    filmeplex = checkplex()
     downloaded = []
-    imdbIDs =[]
+    imdbIDs = []
     movietitles = []
     movieposters =  []
     years = []
@@ -63,9 +63,9 @@ def imdbsearch(movie):
 def imdbSeriesSearch(imdb):
     url = "https://imdb8.p.rapidapi.com/title/find"
     querystring = {"q":"{0}".format(imdb)}
-    filmeplex =checkplex()
+    filmeplex = checkplex()
     downloaded = []
-    imdbIDs =[]
+    imdbIDs = []
     seriestitles = []
     seriesposters =  []
     years = []
@@ -210,7 +210,7 @@ def getmagnet(imdbID):
 
     else:
         print("Best copy will be choosen")
-        position =  scores.index(max(scores))
+        position = scores.index(max(scores))
     print(position)
 
     downloadlink = downloadlinks[position]["download"]
