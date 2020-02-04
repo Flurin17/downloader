@@ -7,7 +7,7 @@ import time
 from plexapi.server import PlexServer
 import os
 from SynDSapi import *
-
+import urllib.parse
 
 def checkplex():
     baseurl = 'https://christian-bosshard.com:32400'
@@ -148,7 +148,7 @@ def rarbgsearchmovie(imdbID):
     else:
         return downloadlinks
 
-def rarbgsearchseries(imdbID):
+def rarbgSearchSeries(imdbID):
     agent = {"User-Agent":'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'}
     session = requests.Session()
     torrentapi = "https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=rarbgapi"
@@ -160,7 +160,6 @@ def rarbgsearchseries(imdbID):
     print(token)
     time.sleep(2.1)
     searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&sort=seeders&limit=100&category=41&format=json_extended&token={1}&app_id=rarbgapi".format(imdbID, token)
-
     while notworked and count < 5:
         searchurlresponse = session.get(searchurl, headers=agent)
         print(searchurl)
@@ -177,6 +176,42 @@ def rarbgsearchseries(imdbID):
     else:
         return downloadlinks
 
+def rarbgSearchEpisode(seriestitle, season, episode):
+    agent = {"User-Agent":'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'}
+    session = requests.Session()
+    torrentapi = "https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=rarbgapi"
+    notworked = True
+    count = 0
+    if len(str(episode)) == 1:
+        episode = "0{0}".format(episode)
+    if len(str(season)) == 1:
+        season = "0{0}".format(season)
+    seriestitle = seriestitle.replace(' ', '%')  
+
+    searchQuery = "{0}%S{1}E{2}".format(seriestitle, season, episode)
+    
+
+    token = session.get(torrentapi, headers=agent).text
+    token = json.loads(token)
+    token = token["token"]
+    print(token)
+    time.sleep(2.1)
+    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string={0}&sort=seeders&limit=100&category=41&format=json_extended&token={1}&app_id=rarbgapi".format(searchQuery, token)
+    while notworked and count < 5:
+        searchurlresponse = session.get(searchurl, headers=agent)
+        print(searchurl)
+        searchurljson = json.loads(searchurlresponse.text)
+        try:
+            downloadlinks = searchurljson["torrent_results"]
+            notworked = False
+            print("Movies have been found")
+        except:
+            time.sleep(2.1)
+            count += 1 
+    if notworked:
+        return "404 No Movies have been found"
+    else:
+        return downloadlinks
 def getmagnet(imdbID):
     scores =[]
     print(imdbID)
@@ -228,7 +263,7 @@ def getSeries(imdbID, season):
     scores =[]
     print(imdbID)
     print("User has chosen season {0}".format(season))
-    downloadlinks = rarbgsearchseries(imdbID)
+    downloadlinks = rarbgSearchSeries(imdbID)
     if downloadlinks == "404 No Movies have been found":
         return
 
@@ -256,11 +291,11 @@ def getSeries(imdbID, season):
     print(scores)
     return downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers
 
-def getEpisode(imdbID, season, episode):
+def getEpisode(imdbID, season, episode, seriestitle):
     scores =[]
     print(imdbID)
     print("User has chosen season {0} and Epsiode {1}".format(season, episode))
-    downloadlinks = rarbgsearchseries(imdbID)
+    downloadlinks = rarbgSearchEpisode(seriestitle, season, episode)
     if downloadlinks == "404 No Movies have been found":
         return
 
@@ -292,7 +327,7 @@ def getEpisode(imdbID, season, episode):
 
 def checkEpisodes(jsonseries, season):
     episodes1 = []
-
+    season = season - 1 
     episodesjson = jsonseries[season]["episodes"]
     for episode in episodesjson:
         episodenumber = episode["episode"]

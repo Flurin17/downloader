@@ -213,7 +213,7 @@ async def episode(ctx, *args):
 
 
 
-        downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = getEpisode(imdbIDs[optionchoosen], seasons[optionchoosenSeries], episodes[optionchoosenEpisode]) 
+        downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = getEpisode(imdbIDs[optionchoosen], seasons[optionchoosenSeries], episodes[optionchoosenEpisode], seriestitles[optionchoosen]) 
         if downloadlink == "404 No  have been found":
             embed = discord.Embed(
                 description= "404 - No Torrent could be found!",
