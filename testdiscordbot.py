@@ -7,21 +7,25 @@ import time
 from SynDSapi import *
 from modules import *
 import os
-import bs4
 
 client = commands.Bot(command_prefix='!')
 @client.command(pass_context = True)
 async def dwn(ctx, *args):
     if ctx.message.channel.id == 668218711571955732:
-        imdbIDs, movietitles, movieposters, downloaded  = imdbsearch(str(args))
-        embed = filmembed(movietitles,downloaded, imdbIDs, ctx) 
+        args = ' '.join(args)   
+        imdbIDs, movietitles, movieposters, downloaded, years  = imdbsearch(str(args))
+        embed = filmembed(movietitles,downloaded, imdbIDs, years, ctx) 
         await ctx.send(embed=embed)
         
-        option = "empty"
-        option = await client.wait_for('message', timeout=30, check=check(ctx.author))
-        print(option.content)
-        if option == "empty":
+        try:
+            option = await client.wait_for('message', timeout=45, check=check(ctx.author))
+        except asyncio.TimeoutError:
             await ctx.send("Time is up. Please start over")
+            return
+
+        if "!dwn" in option.content:
+            return
+
         try:
             optionchoosen = int(option.content)
         except:
@@ -45,40 +49,14 @@ async def dwn(ctx, *args):
 
         startDownload(downloadlink, downloadcategory)
         embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, movieposters, optionchoosen, ctx)
-        messageid = await ctx.send(embed=embed)
+        message = await ctx.send(embed=embed)
         await asyncio.sleep(10)
-        client.loop.create_task(update(messageid, downloadlink, ctx))
+        client.loop.create_task(update(message.id, downloadlink, ctx))
 
     else:
         print("Wrong channel")
         embed = wrongchannelembed(args)
         await ctx.send(embed=embed)
-
-
-@client.command(pass_context = True)
-async def GetInfo(ctx):
-    if ctx.message.channel.id == 668218711571955732:
-        DSinfos = getDSinfo()
-        embed = discord.Embed(
-                description= "Info about currently downloading torrents.",
-                color=discord.Color.blue()
-            )
-        embed.set_author(name="Download Station Infos")
-        for downloads in DSinfos.items():
-            embed.add_field(name="Title", value=("{0}".format(downloads[0][0])))
-
-        embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
-        await ctx.send(embed=embed)
-
-
-@client.command(pass_context= True)
-async def Chg(ctx, arg):
-    #embedmessage = await client.get_message(668218711571955732, arg)
-    embedmessage = await ctx.fetch_message(arg)
-    embed1 = embedmessage.embeds[0]
-    #embed1.add_field(name=embed1.fields[3].name, value=embed1.fields[3].value)
-    embed1.set_field_at(index=3,name=embed1.fields[3].name,value="600")
-    await ctx.send(embed=embed1)
 
 
 client.run('NjMwNDg1MjY2NjM2OTk2NjA5.XiOElQ.pmtdhLDgKCuaAsA3KGMTKY-YDGc')
