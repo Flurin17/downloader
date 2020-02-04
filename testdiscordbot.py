@@ -7,13 +7,14 @@ import time
 from SynDSapi import *
 from modules import *
 from embeds import *
+from cred import *
 import os
 
 client = commands.Bot(command_prefix='!')
 @client.command(pass_context = True)
 async def movie(ctx, *args):
     args = ' '.join(args)   
-    if ctx.message.channel.id == 674178076737011723:
+    if ctx.message.channel.id == discordChannelId:
         imdbIDs, movietitles, movieposters, downloaded, years  = imdbsearch(str(args))
         embed = filmembed(movietitles,downloaded, imdbIDs, years, ctx) 
         await ctx.send(embed=embed)
@@ -63,7 +64,7 @@ async def movie(ctx, *args):
 @client.command(pass_context = True)
 async def season(ctx, *args):
     args = ' '.join(args)   
-    if ctx.message.channel.id == 674178076737011723:
+    if ctx.message.channel.id == discordChannelId:
         imdbIDs, seriestitles, seriesposters, downloaded, years  = imdbSeriesSearch(str(args))
         embed = filmembed(seriestitles,downloaded, imdbIDs, years, ctx) 
         await ctx.send(embed=embed)
@@ -139,7 +140,7 @@ async def season(ctx, *args):
 @client.command(pass_context = True)
 async def episode(ctx, *args):
     args = ' '.join(args)   
-    if ctx.message.channel.id == 674178076737011723:
+    if ctx.message.channel.id == discordChannelId:
         imdbIDs, seriestitles, seriesposters, downloaded, years  = imdbSeriesSearch(str(args))
 
         embed = filmembed(seriestitles,downloaded, imdbIDs, years, ctx) 
@@ -236,4 +237,4 @@ async def episode(ctx, *args):
         embed = wrongchannelembed(args)
         await ctx.send(embed=embed)
 
-client.run('Njc0MTc3ODAyMjYxNjI2OTEy.XjkzBw.GOYOXz1XjSimZllifUhrt3YuvqQ')
+client.run(discordBotToken)

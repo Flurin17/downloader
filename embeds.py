@@ -7,6 +7,7 @@ import time
 from plexapi.server import PlexServer
 import os
 from SynDSapi import *
+from cred import *
 
 def filmembed(movietitles,downloaded, imdbs, years, ctx):
     print(type(downloaded))

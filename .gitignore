@@ -1,6 +1,9 @@
 # IDE Files
 .vscode/
 
+# Credential Files
+cred.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

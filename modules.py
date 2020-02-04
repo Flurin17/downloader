@@ -7,11 +7,12 @@ import time
 from plexapi.server import PlexServer
 import os
 from SynDSapi import *
+from cred import *
 import urllib.parse
 
 def checkplex():
-    baseurl = 'https://christian-bosshard.com:32400'
-    token = 'jQLssu8zXvdvAJdAg_8v'
+    baseurl = plexBaseUrl
+    token = plexToken
     plex = PlexServer(baseurl, token)
     media = plex.library.all()
     filmeplex = []
@@ -30,7 +31,7 @@ def imdbsearch(movie):
     years = []
     headers = {
         'x-rapidapi-host': "imdb8.p.rapidapi.com",
-        'x-rapidapi-key': "fafc5b8916msh957f0d1eee88e85p13674bjsn85b23f581d9c"
+        'x-rapidapi-key': rapidApiKey
         }
     response = requests.request("GET", url, headers=headers, params=querystring)
 
@@ -71,7 +72,7 @@ def imdbSeriesSearch(imdb):
     years = []
     headers = {
         'x-rapidapi-host': "imdb8.p.rapidapi.com",
-        'x-rapidapi-key': "fafc5b8916msh957f0d1eee88e85p13674bjsn85b23f581d9c"
+        'x-rapidapi-key': rapidApiKey
         }
     response = requests.request("GET", url, headers=headers, params=querystring)
 
@@ -108,7 +109,7 @@ def imdbSeriesSearchSeason(imdbID):
 
     headers = {
         'x-rapidapi-host': "imdb8.p.rapidapi.com",
-        'x-rapidapi-key': "fafc5b8916msh957f0d1eee88e85p13674bjsn85b23f581d9c"
+        'x-rapidapi-key': rapidApiKey
         }
 
     response = requests.request("GET", url, headers=headers, params=querystring)
