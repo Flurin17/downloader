@@ -23,9 +23,9 @@ def checkplex():
 def imdbsearch(movie):
     url = "https://imdb8.p.rapidapi.com/title/find"
     querystring = {"q":"{0}".format(movie)}
-    filmeplex =checkplex()
+    filmeplex = checkplex()
     downloaded = []
-    imdbIDs =[]
+    imdbIDs = []
     movietitles = []
     movieposters =  []
     years = []
@@ -64,9 +64,9 @@ def imdbsearch(movie):
 def imdbSeriesSearch(imdb):
     url = "https://imdb8.p.rapidapi.com/title/find"
     querystring = {"q":"{0}".format(imdb)}
-    filmeplex =checkplex()
+    filmeplex = checkplex()
     downloaded = []
-    imdbIDs =[]
+    imdbIDs = []
     seriestitles = []
     seriesposters =  []
     years = []
@@ -119,6 +119,7 @@ def imdbSeriesSearchSeason(imdbID):
         seasons.append(seasonnumber)
     print(seasons)
     return seasons
+
 def rarbgsearchmovie(imdbID):
     agent = {"User-Agent":'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'}
     session = requests.Session()
@@ -210,7 +211,7 @@ def getmagnet(imdbID):
 
     else:
         print("Best copy will be choosen")
-        position =  scores.index(max(scores))
+        position = scores.index(max(scores))
     print(position)
 
     downloadlink = downloadlinks[position]["download"]
