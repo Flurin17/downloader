@@ -135,6 +135,7 @@ def imdbSeriesSearchSeason(imdbID):
 
     print(seasons)
     return seasons, jsonseries
+    
 def rarbgsearchmovie(imdbID):
     agent = {"User-Agent":'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'}
     session = requests.Session()
@@ -145,7 +146,7 @@ def rarbgsearchmovie(imdbID):
     token = json.loads(token)
     token = token["token"]
     print(token)
-    time.sleep(2.1)
+    time.sleep(2.6)
     searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&sort=seeders&limit=100&category=44&format=json_extended&token={1}&app_id=rarbgapi".format(imdbID, token)
 
     while notworked and count < 5:
@@ -157,7 +158,7 @@ def rarbgsearchmovie(imdbID):
             notworked = False
             print("Movies have been found")
         except:
-            time.sleep(2.1)
+            time.sleep(3)
             count += 1 
     if notworked:
         return "404 No Movies have been found"

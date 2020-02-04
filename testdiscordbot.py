@@ -129,7 +129,7 @@ async def season(ctx, *args):
         
         startDownload(downloadlink, downloadcategory) #Just for testing put it over embed again
         await asyncio.sleep(10)
-        #client.loop.create_task(update(message.id, downloadlink, ctx))
+        client.loop.create_task(update(message.id, downloadlink, ctx))
 
     else:
         print("Wrong channel")
