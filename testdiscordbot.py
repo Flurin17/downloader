@@ -222,7 +222,7 @@ async def episode(ctx, *args):
             embed.set_author(name="RARBG-Torrent")
             embed.add_field(name="IMDB-Title", value="Your Season '{0}' isn't on RARBG!".format(seriestitles[optionchoosen]))
             embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed) # Fix this errorhandling
 
         embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, seriesposters, optionchoosen, ctx)
         message = await ctx.send(embed=embed)
