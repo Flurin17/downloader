@@ -20,6 +20,19 @@ def checkplex():
         filmeplex.append(video.guid)
     return filmeplex
 
+def searchplex(title):
+    baseurl = 'https://christian-bosshard.com:32400'
+    token = 'jQLssu8zXvdvAJdAg_8v'
+    media = []
+    plex = PlexServer(baseurl, token)
+    media = plex.library.search(title)
+    if not media:
+        found = False
+    else:
+        found = True
+    print(media)
+    return found
+
 def imdbsearch(movie):
     url = "https://imdb8.p.rapidapi.com/title/find"
     querystring = {"q":"{0}".format(movie)}
