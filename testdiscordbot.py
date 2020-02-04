@@ -52,7 +52,6 @@ async def movie(ctx, *args):
         embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, movieposters, optionchoosen, ctx)
         message = await ctx.send(embed=embed)
 
-        startDownload(downloadlink, downloadcategory) #Just for testing put it over embed again
         await asyncio.sleep(10)
         client.loop.create_task(update(message.id, downloadlink, ctx))
 
