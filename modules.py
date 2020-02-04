@@ -8,9 +8,8 @@ from plexapi.server import PlexServer
 import os
 from SynDSapi import *
 
-def imdbsearch(movie):
-    url = "https://imdb8.p.rapidapi.com/title/find"
-    querystring = {"q":"{0}".format(movie)}
+
+def checkplex():
     baseurl = 'https://christian-bosshard.com:32400'
     token = 'jQLssu8zXvdvAJdAg_8v'
     plex = PlexServer(baseurl, token)
@@ -19,6 +18,12 @@ def imdbsearch(movie):
     for video in media:
         filmeplex.append(video.guid)
     print(filmeplex)
+    return filmeplex
+
+def imdbsearch(movie):
+    url = "https://imdb8.p.rapidapi.com/title/find"
+    querystring = {"q":"{0}".format(movie)}
+    filmeplex =checkplex()
     downloaded = []
     imdbIDs =[]
     movietitles = []
@@ -56,7 +61,48 @@ def imdbsearch(movie):
     print(downloaded)
     return imdbIDs, movietitles, movieposters, downloaded, years
 
-def imdbSeriesSearch(imdbID):
+def imdbSeriesSearch(imdb):
+    url = "https://imdb8.p.rapidapi.com/title/find"
+    querystring = {"q":"{0}".format(imdb)}
+    filmeplex =checkplex()
+    downloaded = []
+    imdbIDs =[]
+    seriestitles = []
+    seriesposters =  []
+    years = []
+    headers = {
+        'x-rapidapi-host': "imdb8.p.rapidapi.com",
+        'x-rapidapi-key': "fafc5b8916msh957f0d1eee88e85p13674bjsn85b23f581d9c"
+        }
+    response = requests.request("GET", url, headers=headers, params=querystring)
+
+    jsonmseries = json.loads(response.text)
+    results = jsonmseries["results"]
+    for result in results:
+        try:
+            if result["titleType"] == "tvSeries":
+                print("series found")
+                imdbID = result["id"].replace("/title/",'')
+                imdbID = imdbID.replace("/",'')
+                imdbIDs.append(imdbID)
+                imdbIDplexurl = "com.plexapp.agents.imdb://{0}?lang=en".format(imdbID)
+                years.append(result["year"])
+                seriestitles.append(result["title"])
+                seriesposters.append(result["image"]["url"])
+                if imdbIDplexurl in filmeplex:
+                    print("Series is on Plex")
+                    downloaded.append("True")
+                else:
+                    downloaded.append("False")
+        except:
+            print("This Result is not a series")
+    print(imdbIDs)
+    print(seriestitles)
+    print(seriesposters)
+    print(downloaded)
+    return imdbIDs, seriestitles, seriesposters, downloaded, years
+
+def imdbSeriesSearchSeason(imdbID):
     seasons = []
     url = "https://imdb8.p.rapidapi.com/title/get-seasons"
     querystring = {"tconst":"{0}".format(imdbID)}
@@ -71,7 +117,7 @@ def imdbSeriesSearch(imdbID):
     for season in jsonseries:
         seasonnumber = season["season"]
         seasons.append(seasonnumber)
-
+    print(seasons)
     return seasons
 def rarbgsearch(imdbID):
     agent = {"User-Agent":'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'}
@@ -181,18 +227,5 @@ def getSeries(imdbID, season):
     return downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers
 
         
-def checkplex(imdbID):
-    baseurl = 'https://christian-bosshard.com:32400'
-    token = 'jQLssu8zXvdvAJdAg_8v'
-    plex = PlexServer(baseurl, token)
-    movies = plex.library.section('Filme')
-
-    alreadydown = False
-    for video in movies.search():
-        imdbplexurl = video.guid
-        if imdbID in imdbplexurl:
-            print("Film is on Plex")
-            alreadydown = True
-    return alreadydown
 
 

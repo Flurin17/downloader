@@ -127,16 +127,16 @@ async def update(messageid, magnetlink, ctx):
     embed1.add_field(name="Tag", value="The Film has been downloaded <@{0}>".format(ctx.message.author.id))
     await embedmessage.edit(embed=embed1)
 
-def seasonsEmbed(seasons, movietitle, movieposter, imdb, ctx):
+def seasonsEmbed(seasons, seriestitle, seriesposter, ctx):
     embed = discord.Embed(
-        description= movietitle,
+        description= seriestitle,
         color=discord.Color.orange()
         )
     embed.set_author(name="Seasons Found")
     for season in seasons:
-        embed.add_field(name="{0}".format(season), value="")
+        embed.add_field(name="Season", value="{0}".format(season))
     
-    embed.set_thumbnail(url=movieposter)
+    embed.set_thumbnail(url=seriesposter)
     embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
     return embed
 
