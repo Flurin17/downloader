@@ -18,7 +18,7 @@ def filmembed(movietitles,downloaded, imdbs, years, ctx):
         )
     embed.set_author(name="Films Found")
     for download in downloaded:
-        if download == "False":
+        if download == False:
             embed.add_field(name=i, value="[{0} ({1})](https://www.imdb.com/title/{2}/)".format(movietitles[i], years[i],imdbs[i]))
         else:
             embed.add_field(name=i, value="[~~{0} ({1})~~](https://www.imdb.com/title/{2}/)".format(movietitles[i], years[i],imdbs[i]))
@@ -62,7 +62,7 @@ def wrongchannelembed(args):
             description= "Search {0} somewhere else dumbass".format(args),
             colour=discord.Color.red()
         )
-    embed.add_field(name="!dwn", value="Downloading Movies")
+    embed.add_field(name="Command", value="Downloading Movies")
     return embed
 
 def updatetorrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, movieposters, optionchoosen, ctx):

@@ -10,22 +10,14 @@ from SynDSapi import *
 from cred import *
 import urllib.parse
 
-def checkplex():
-    baseurl = plexBaseUrl
-    token = plexToken
-    plex = PlexServer(baseurl, token)
-    media = plex.library.all()
-    filmeplex = []
-    for video in media:
-        filmeplex.append(video.guid)
-    return filmeplex
 
-def searchplex(title):
+def searchplex(imdbId):
     baseurl = plexBaseUrl
     token = plexToken
     media = []
     plex = PlexServer(baseurl, token)
-    media = plex.library.search(title)
+    titleurl = "com.plexapp.agents.imdb://{0}?lang=en".format(imdbId)
+    media = plex.library.search(guid=titleurl)
     if not media:
         found = False
     else:
@@ -36,7 +28,6 @@ def searchplex(title):
 def imdbsearch(movie):
     url = "https://imdb8.p.rapidapi.com/title/find"
     querystring = {"q":"{0}".format(movie)}
-    filmeplex = checkplex()
     downloaded = []
     imdbIDs = []
     movietitles = []
@@ -57,15 +48,10 @@ def imdbsearch(movie):
                 imdbID = result["id"].replace("/title/",'')
                 imdbID = imdbID.replace("/",'')
                 imdbIDs.append(imdbID)
-                imdbIDplexurl = "com.plexapp.agents.imdb://{0}?lang=en".format(imdbID)
                 years.append(result["year"])
                 movietitles.append(result["title"])
                 movieposters.append(result["image"]["url"])
-                if imdbIDplexurl in filmeplex:
-                    print("Film is on Plex")
-                    downloaded.append("True")
-                else:
-                    downloaded.append("False")
+                downloaded.append(searchplex(imdbID))
         except:
             print("This Result is not a movie")
     print(imdbIDs)
@@ -77,7 +63,6 @@ def imdbsearch(movie):
 def imdbSeriesSearch(imdb):
     url = "https://imdb8.p.rapidapi.com/title/find"
     querystring = {"q":"{0}".format(imdb)}
-    filmeplex = checkplex()
     downloaded = []
     imdbIDs = []
     seriestitles = []
@@ -98,15 +83,11 @@ def imdbSeriesSearch(imdb):
                 imdbID = result["id"].replace("/title/",'')
                 imdbID = imdbID.replace("/",'')
                 imdbIDs.append(imdbID)
-                imdbIDplexurl = "com.plexapp.agents.imdb://{0}?lang=en".format(imdbID)
                 years.append(result["year"])
                 seriestitles.append(result["title"])
                 seriesposters.append(result["image"]["url"])
-                if imdbIDplexurl in filmeplex:
-                    print("Series is on Plex")
-                    downloaded.append("True")
-                else:
-                    downloaded.append("False")
+                downloaded.append(searchplex(imdbID))
+
         except:
             print("This Result is not a series")
     print(imdbIDs)
