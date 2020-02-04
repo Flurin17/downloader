@@ -48,12 +48,12 @@ async def movie(ctx, *args):
             embed.add_field(name="IMDB-Title", value="Your movie '{0}' isn't on RARBG!".format(movietitles[optionchoosen]))
             embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
             await ctx.send(embed=embed)
-        #startDownload(downloadlink, downloadcategory) 
+        startDownload(downloadlink, downloadcategory) 
         embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, movieposters, optionchoosen, ctx)
         message = await ctx.send(embed=embed)
 
-        #await asyncio.sleep(10)
-        #client.loop.create_task(update(message.id, downloadlink, ctx))
+        await asyncio.sleep(10)
+        client.loop.create_task(update(message.id, downloadlink, ctx))
 
     else:
         print("Wrong channel")
@@ -127,8 +127,8 @@ async def season(ctx, *args):
         embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, seriesposters, optionchoosen, ctx)
         message = await ctx.send(embed=embed)
         
-        #startDownload(downloadlink, downloadcategory) #Just for testing put it over embed again
-        #await asyncio.sleep(10)
+        startDownload(downloadlink, downloadcategory) #Just for testing put it over embed again
+        await asyncio.sleep(10)
         #client.loop.create_task(update(message.id, downloadlink, ctx))
 
     else:
@@ -210,8 +210,6 @@ async def episode(ctx, *args):
         else:
             await ctx.send("Number is not in Range. Start over")
             return
-
-
 
         downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = getEpisode(imdbIDs[optionchoosen], seasons[optionchoosenSeries], episodes[optionchoosenEpisode], seriestitles[optionchoosen]) 
         if downloadlink == "404 No  have been found":

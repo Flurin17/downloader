@@ -1,7 +1,7 @@
 import requests as rs
 from cred import *
 import json
-
+from modules import getPlexLibrariesPath
 
 def startDownload(magnetUrl, category):
     username = dsUsername
@@ -15,12 +15,21 @@ def startDownload(magnetUrl, category):
 
     urlTasks = 'https://{0}:5001/webapi/DownloadStation/task.cgi?api=SYNO.DownloadStation.Task&version=3&method=list'.format(baseUrl)
     urlCreate = 'https://{0}:5001/webapi/DownloadStation/task.cgi'.format(baseUrl)
-    urlResume = 'https://{0}:5001/webapi/DownloadStation/task.cgi?api=SYNO.DownloadStation.Task&version=3&method=downloading&id='.format(baseUrl)
+
+
+    moviePath, showPath = getPlexLibrariesPath()
 
     if 'Movies' in category:
-        dest = 'homes/plex/Movies'
+        if moviePath[0] == None:
+            return
+        else:
+            dest = moviePath[0].split("/var/services/")[1]
+            
     elif 'TV' in category:
-        dest = 'homes/plex/TV Shows'
+        if showPath[0] == None:
+            return
+        else:
+            dest = showPath[0].split("/var/services/")[1]
 
     data = {
         'api': 'SYNO.DownloadStation.Task',
@@ -37,6 +46,7 @@ def startDownload(magnetUrl, category):
             createTask = sess.post(urlCreate, data=data)
             if json.loads(createTask.text)['success'] == True:
                 print('Successfully added Torrent')
+                sess.get(urlDisco)
 
 
 def checkDownload(magnetlink):
@@ -50,6 +60,7 @@ def checkDownload(magnetlink):
     urlDisco = 'https://{0}:5001/webapi/auth.cgi?api=SYNO.API.Auth&version=6&method=logout&session=DownloadStation'.format(baseUrl)
     urlTasks = 'https://{0}:5001/webapi/DownloadStation/task.cgi?api=SYNO.DownloadStation.Task&version=3&method=list&additional=detail,transfer'.format(baseUrl)
 
+
     sess = rs.session()
     auth = sess.get(urlAuth)
     if auth.status_code == 200:
@@ -60,4 +71,5 @@ def checkDownload(magnetlink):
                 for torrent in json.loads(taskList.text)['data']['tasks']:
                     if magnetlink.split('&tr=')[0] == torrent['additional']['detail']['uri'].split('&tr=')[0]:
                         print(torrent['title'])
+                        sess.get(urlDisco)
                         return torrent['status'], torrent['additional']['transfer']['speed_download'], torrent['additional']['transfer']['size_downloaded'], torrent['size'], torrent['additional']['detail']['connected_seeders'], torrent['additional']['detail']['connected_leechers']

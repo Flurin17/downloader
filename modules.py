@@ -10,6 +10,21 @@ from SynDSapi import *
 from cred import *
 import urllib.parse
 
+def getPlexLibrariesPath():
+    baseurl = plexBaseUrl
+    token = plexToken
+    plex = PlexServer(baseurl, token)
+    moviePath = None
+    showPath = None
+    
+    sections = plex.library.sections()
+    for section in sections:
+        if section.type == "movie":
+            moviePath = section.locations
+        if section.type == "show":
+            showPath = section.locations
+    return moviePath, showPath
+
 
 def searchplex(imdbId):
     baseurl = plexBaseUrl
@@ -24,6 +39,12 @@ def searchplex(imdbId):
         found = True
     print(media)
     return found
+
+def updateplex():
+    baseurl = plexBaseUrl
+    token = plexToken
+    plex = PlexServer(baseurl, token)
+    plex.library.update()
 
 def imdbsearch(movie):
     url = "https://imdb8.p.rapidapi.com/title/find"
