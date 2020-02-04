@@ -152,3 +152,16 @@ def chosenSeriesEmbed(movietitle, movieposter, imdb, season,  ctx):
     embed.set_thumbnail(url=movieposter)
     embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
     return embed
+
+def episodeEmbed(episodes,  seriestitle, seriesposter, ctx):
+    embed = discord.Embed(
+        description= seriestitle,
+        color=discord.Color.orange()
+        )
+    embed.set_author(name="Episodes Found")
+    for episode in episodes:
+        embed.add_field(name="Episode", value="{0}".format(episode))
+    
+    embed.set_thumbnail(url=seriesposter)
+    embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
+    return embed

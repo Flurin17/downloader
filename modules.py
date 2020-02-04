@@ -17,7 +17,6 @@ def checkplex():
     filmeplex = []
     for video in media:
         filmeplex.append(video.guid)
-    print(filmeplex)
     return filmeplex
 
 def imdbsearch(movie):
@@ -117,8 +116,9 @@ def imdbSeriesSearchSeason(imdbID):
     for season in jsonseries:
         seasonnumber = season["season"]
         seasons.append(seasonnumber)
+
     print(seasons)
-    return seasons
+    return seasons, jsonseries
 def rarbgsearchmovie(imdbID):
     agent = {"User-Agent":'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'}
     session = requests.Session()
@@ -130,7 +130,7 @@ def rarbgsearchmovie(imdbID):
     token = token["token"]
     print(token)
     time.sleep(2.1)
-    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&sort=seeders&category=44&format=json_extended&token={1}&app_id=rarbgapi".format(imdbID, token)
+    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&sort=seeders&limit=100&category=44&format=json_extended&token={1}&app_id=rarbgapi".format(imdbID, token)
 
     while notworked and count < 5:
         searchurlresponse = session.get(searchurl, headers=agent)
@@ -159,7 +159,7 @@ def rarbgsearchseries(imdbID):
     token = token["token"]
     print(token)
     time.sleep(2.1)
-    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&sort=seeders&category=41&format=json_extended&token={1}&app_id=rarbgapi".format(imdbID, token)
+    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&sort=seeders&limit=100&category=41&format=json_extended&token={1}&app_id=rarbgapi".format(imdbID, token)
 
     while notworked and count < 5:
         searchurlresponse = session.get(searchurl, headers=agent)
@@ -256,6 +256,46 @@ def getSeries(imdbID, season):
     print(scores)
     return downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers
 
-        
+def getEpisode(imdbID, season, episode):
+    scores =[]
+    print(imdbID)
+    print("User has chosen season {0} and Epsiode {1}".format(season, episode))
+    downloadlinks = rarbgsearchseries(imdbID)
+    if downloadlinks == "404 No Movies have been found":
+        return
 
+    for torrent in downloadlinks:
+        downloadSize = torrent["size"]
+        seeders = torrent["seeders"]
+        seriesTitle = torrent["episode_info"]["title"]
+        episodenumtorrent = torrent["episode_info"]["epnum"]
+        seasonnumtorrent = torrent["episode_info"]["seasonnum"]
+        print(seeders)
+        print(seriesTitle)
+        if str(episode) in episodenumtorrent and str(season) in seasonnumtorrent:
+            scores.append(seeders)
+        else:
+            scores.append(0)
 
+    position =  scores.index(max(scores))
+
+    downloadlink = downloadlinks[position]["download"]
+    downloadname = downloadlinks[position]["title"]
+    downloadcategory = downloadlinks[position]["category"]
+    seeders = downloadlinks[position]["seeders"]
+    leechers = downloadlinks[position]["leechers"]
+    downloadsize =  str(round((downloadlinks[position]["size"]/1000000000),2))
+    downloadpage = downloadlinks[position]["info_page"]
+    print(downloadname)
+    print(scores)
+    return downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers        
+
+def checkEpisodes(jsonseries, season):
+    episodes1 = []
+
+    episodesjson = jsonseries[season]["episodes"]
+    for episode in episodesjson:
+        episodenumber = episode["episode"]
+        episodes1.append(episodenumber)
+    print(episodes1)
+    return episodes1
