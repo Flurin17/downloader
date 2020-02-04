@@ -21,8 +21,8 @@ def checkplex():
     return filmeplex
 
 def searchplex(title):
-    baseurl = 'https://christian-bosshard.com:32400'
-    token = 'jQLssu8zXvdvAJdAg_8v'
+    baseurl = plexBaseUrl
+    token = plexToken
     media = []
     plex = PlexServer(baseurl, token)
     media = plex.library.search(title)
