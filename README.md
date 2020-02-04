@@ -1,6 +1,6 @@
 # Plex-Downloader
 
-Downloads Movies (and TV-Shows) from a certain website and adds them to Plex of a Synology NAS when a User sends a request in Discord.
+Downloads Movies (and TV-Shows) from a certain website and adds them to the Plex Media Server of a Synology NAS when a User sends a request in Discord.
 
 Usage:
 - !dwn [movie name]
