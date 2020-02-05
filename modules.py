@@ -26,7 +26,7 @@ def getPlexLibrariesPath():
     return moviePath, showPath
 
 
-def searchplex(imdbId):
+def searchplexMovie(imdbId):
     baseurl = plexBaseUrl
     token = plexToken
     media = []
@@ -91,7 +91,7 @@ def imdbsearch(movie):
                 years.append(result["year"])
                 movietitles.append(result["title"])
                 movieposters.append(result["image"]["url"])
-                downloaded.append(searchplex(imdbID))
+                downloaded.append(searchplexMovie(imdbID))
         except:
             print("This Result is not a movie")
     print(imdbIDs)
@@ -248,6 +248,7 @@ def rarbgSearchEpisode(seriestitle, season, episode):
         return "404 No Movies have been found"
     else:
         return downloadlinks
+
 def getmagnet(imdbID):
     scores =[]
     print(imdbID)
@@ -326,9 +327,7 @@ def getSeries(imdbID, season):
     print(downloadname)
     print(scores)
     return downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers
-
-
-    
+   
 def getEpisode(imdbID, season, episode, seriestitle):
     scores =[]
     print(imdbID)
@@ -383,5 +382,6 @@ def checkEpisodes(jsonseries, season, imdb):
     return episodes1, inPlex 
 
 async def deleteMessages(messages):
+    await asyncio.sleep(10)
     for message in messages:
         await message.delete()
