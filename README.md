@@ -32,7 +32,8 @@ Please use the same API that we used for this project, so everything runs flawle
  - Synology Downloadstation:<br/>
 You only need a user which has access to the downloadstation and the directories.
  - Discord-Bot:<br/>
-Create a discord bot and server. https://discordpy.readthedocs.io/en/latest/discord.html Easiest way is to just set administrator rights, but for general safety purposes give the bot only the necessary "Text" permissions
+Create a discord bot and add him to a server: https://discordpy.readthedocs.io/en/latest/discord.html<br/>
+Easiest way is to just set administrator rights, but for general safety purposes give the bot only the necessary "Text" permissions
  - Discord Channel ID:<br/>
  Get the channel ID where you want your bot to work. https://github.com/Chikachi/DiscordIntegration/wiki/How-to-get-a-token-and-channel-ID-for-Discord
  ### cred.py
