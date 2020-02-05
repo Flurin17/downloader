@@ -141,28 +141,52 @@ def seasonsEmbed(seasons, seriestitle, seriesposter, ctx):
     embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
     return embed
 
-def chosenSeriesEmbed(movietitle, movieposter, imdb, season,  ctx):
-    embed = discord.Embed(
-        description= "",
-        color=discord.Color.green()
-        )
-    embed.set_author(name="Series and Season chosen")
-    embed.add_field(name="Series", value=movietitle)
-    embed.add_field(name="IMDB", value="[{0}](https://www.imdb.com/title/{0}/)".format(imdb))
-    embed.add_field(name="Season", value=season)
-    embed.set_thumbnail(url=movieposter)
-    embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
+def chosenSeriesEmbed(movietitle, movieposter, imdb, season, episode,  ctx):
+    if episode == 0:
+        embed = discord.Embed(
+            description= "",
+            color=discord.Color.green()
+            )
+        embed.set_author(name="Series and Season chosen")
+        embed.add_field(name="Series", value=movietitle)
+        embed.add_field(name="IMDB", value="[{0}](https://www.imdb.com/title/{0}/)".format(imdb))
+        embed.add_field(name="Season", value=season)
+        embed.set_thumbnail(url=movieposter)
+        embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
+    else:
+        embed = discord.Embed(
+            description= "",
+            color=discord.Color.green()
+            )
+        embed.set_author(name="Series, Season and Episode chosen")
+        embed.add_field(name="Series", value=movietitle)
+        embed.add_field(name="IMDB", value="[{0}](https://www.imdb.com/title/{0}/)".format(imdb))
+        embed.add_field(name="Season", value=season)
+        embed.add_field(name="Episode", value=episode)
+        embed.set_thumbnail(url=movieposter)
+        embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
     return embed
 
-def episodeEmbed(episodes,  seriestitle, seriesposter, ctx):
+def episodeEmbed(episodes, inPlex,   seriestitle, seriesposter, ctx):
+    i = 0
     embed = discord.Embed(
         description= seriestitle,
         color=discord.Color.orange()
         )
     embed.set_author(name="Episodes Found")
+    print(inPlex)
+    if all(x == True for x in inPlex):
+        embed.add_field(name="~~Season~~", value="~~0~~")
+    else:
+        embed.add_field(name="Season", value="0")
+
     for episode in episodes:
-        embed.add_field(name="Episode", value="{0}".format(episode))
-    
+        if inPlex[i]:
+            embed.add_field(name="~~Episode~~", value="~~{0}~~".format(episode))
+        else:
+           embed.add_field(name="Episode", value="{0}".format(episode)) 
+        i +=1
+        
     embed.set_thumbnail(url=seriesposter)
     embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
     return embed

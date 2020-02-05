@@ -107,7 +107,7 @@ async def season(ctx, *args):
             await ctx.send("Please provide a valid Option")
         if optionchoosenSeries <= len(seasons) and optionchoosenSeries >= 1:
             optionchoosenSeries = optionchoosenSeries -1
-            embed = chosenSeriesEmbed(seriestitles[optionchoosen], seriesposters[optionchoosen], imdbIDs[optionchoosen], seasons[optionchoosenSeries], ctx)
+            
             await ctx.send(embed=embed)
         else:
             await ctx.send("Number is not in Range. Start over")
@@ -137,7 +137,7 @@ async def season(ctx, *args):
         await ctx.send(embed=embed)
 
 @client.command(pass_context = True)
-async def episode(ctx, *args):
+async def show(ctx, *args):
     args = ' '.join(args)   
     if ctx.message.channel.id == discordChannelId:
         imdbIDs, seriestitles, seriesposters, downloaded, years  = imdbSeriesSearch(str(args))
@@ -153,7 +153,7 @@ async def episode(ctx, *args):
             await ctx.send("Time is up. Please start over")
             return
 
-        if "!episode" in option.content:
+        if "!show" in option.content:
             return
 
         try:
@@ -177,7 +177,7 @@ async def episode(ctx, *args):
             await ctx.send("Time is up. Please start over")
             return
 
-        if "!episode" in option.content:
+        if "!show" in option.content:
             return
 
         try:
@@ -186,8 +186,8 @@ async def episode(ctx, *args):
             await ctx.send("Please provide a valid Option")
         if optionchoosenSeries <= len(seasons) and optionchoosenSeries >= 1:
             optionchoosenSeries = optionchoosenSeries - 1
-            episodes = checkEpisodes(jsonseries ,seasons[optionchoosenSeries])
-            embed = episodeEmbed(episodes, seriestitles[optionchoosen], seriesposters[optionchoosen], ctx)
+            episodes, inPlex = checkEpisodes(jsonseries ,seasons[optionchoosenSeries])
+            embed = episodeEmbed(episodes, inPlex, seriestitles[optionchoosen], seriesposters[optionchoosen], ctx)
             await ctx.send(embed=embed)
         else:
             await ctx.send("Number is not in Range. Start over")
@@ -205,13 +205,14 @@ async def episode(ctx, *args):
             optionchoosenEpisode = int(option.content)
         except:
             await ctx.send("Please provide a valid Option")
-        if optionchoosenEpisode <= len(episodes) and optionchoosenEpisode >= 1:
-            optionchoosenEpisode = optionchoosenEpisode - 1 
+        if optionchoosenEpisode <= len(episodes) and optionchoosenEpisode >= 0:
+            embed = chosenSeriesEmbed(seriestitles[optionchoosen], seriesposters[optionchoosen], imdbIDs[optionchoosen], seasons[optionchoosenSeries], optionchoosenEpisode, ctx)
+            await ctx.send(embed=embed) 
         else:
             await ctx.send("Number is not in Range. Start over")
             return
 
-        downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = getEpisode(imdbIDs[optionchoosen], seasons[optionchoosenSeries], episodes[optionchoosenEpisode], seriestitles[optionchoosen]) 
+        downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = downloadShow(imdbIDs[optionchoosen], seasons[optionchoosenSeries], optionchoosenEpisode, seriestitles[optionchoosen]) 
         if downloadlink == "404 No  have been found":
             embed = discord.Embed(
                 description= "404 - No Torrent could be found!",
