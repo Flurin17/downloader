@@ -33,6 +33,6 @@ Downloads Movies (and TV-Shows) from a certain website and adds them to the Plex
  Setup the Downloadstation and unfortunately you must use the adminuser of the diskstation.
  - Discordbot
  Create a discord bot and server. https://discordpy.readthedocs.io/en/latest/discord.html Easiest way is to just set administrator rights, but for general safety purposes give the bot only the necessary "Text" permissions
- -Discord Channel I D
+ - Discord Channel I D
  Get the channel ID where you want your bot to work. https://github.com/Chikachi/DiscordIntegration/wiki/How-to-get-a-token-and-channel-ID-for-Discord
  - Copy all the gathered data in the cred.py file
