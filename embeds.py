@@ -142,32 +142,25 @@ def seasonsEmbed(seasons, seriestitle, seriesposter, ctx):
     return embed
 
 def chosenSeriesEmbed(movietitle, movieposter, imdb, season, episode,  ctx):
+    embed = discord.Embed(
+            description= "",
+            color=discord.Color.green()
+        )
+    embed.set_author(name="Series and Season chosen")
+    embed.add_field(name="Series", value="[{0}](https://www.imdb.com/title/{1}/)".format(movietitle, imdb))
+    embed.add_field(name="Season", value=season)
+    embed.set_thumbnail(url=movieposter)
+    embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
+    
     if episode == 0:
-        embed = discord.Embed(
-            description= "",
-            color=discord.Color.green()
-            )
         embed.set_author(name="Series and Season chosen")
-        embed.add_field(name="Series", value=movietitle)
-        embed.add_field(name="IMDB", value="[{0}](https://www.imdb.com/title/{0}/)".format(imdb))
-        embed.add_field(name="Season", value=season)
-        embed.set_thumbnail(url=movieposter)
-        embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
     else:
-        embed = discord.Embed(
-            description= "",
-            color=discord.Color.green()
-            )
         embed.set_author(name="Series, Season and Episode chosen")
-        embed.add_field(name="Series", value=movietitle)
-        embed.add_field(name="IMDB", value="[{0}](https://www.imdb.com/title/{0}/)".format(imdb))
-        embed.add_field(name="Season", value=season)
         embed.add_field(name="Episode", value=episode)
-        embed.set_thumbnail(url=movieposter)
-        embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
+
     return embed
 
-def episodeEmbed(episodes, inPlex,   seriestitle, seriesposter, ctx):
+def episodeEmbed(episodes, inPlex, seriestitle, seriesposter, ctx):
     i = 0
     embed = discord.Embed(
         description= seriestitle,
