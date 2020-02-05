@@ -8,6 +8,7 @@ from plexapi.server import PlexServer
 import os
 from SynDSapi import *
 from cred import *
+from modules import rarbgSearchSeries 
 
 def filmembed(movietitles,downloaded, imdbs, years, ctx):
     print(type(downloaded))
@@ -16,7 +17,7 @@ def filmembed(movietitles,downloaded, imdbs, years, ctx):
         description= "",
         color=discord.Color.orange()
         )
-    embed.set_author(name="Films Found")
+    embed.set_author(name="Films or tvShows Found")
     for download in downloaded:
         if download == False:
             embed.add_field(name=i, value="[{0} ({1})](https://www.imdb.com/title/{2}/)".format(movietitles[i], years[i],imdbs[i]))
@@ -160,7 +161,7 @@ def chosenSeriesEmbed(movietitle, movieposter, imdb, season, episode,  ctx):
 
     return embed
 
-def episodeEmbed(episodes, inPlex, seriestitle, seriesposter, ctx):
+def episodeEmbed(episodes, inPlex, seriestitle, seriesposter, imdb,  ctx):
     i = 0
     embed = discord.Embed(
         description= seriestitle,
@@ -169,9 +170,13 @@ def episodeEmbed(episodes, inPlex, seriestitle, seriesposter, ctx):
     embed.set_author(name="Episodes Found")
     print(inPlex)
     if all(x == True for x in inPlex):
-        embed.add_field(name="~~Season~~", value="~~0~~")
+        embed.add_field(name="~~Season Pack~~", value="~~0~~")
     else:
-        embed.add_field(name="Season", value="0")
+        exists = rarbgSearchSeries(imdb)
+        if exists == False:
+            embed.add_field(name="**~~Season Pack~~**", value="**~~0~~**")
+        else:
+            embed.add_field(name="**Season Pack**", value="**0**")
 
     for episode in episodes:
         if inPlex[i]:

@@ -148,8 +148,11 @@ def imdbSeriesSearchSeason(imdbID):
     response = requests.request("GET", url, headers=headers, params=querystring)
     jsonseries = json.loads(response.text)
     for season in jsonseries:
-        seasonnumber = season["season"]
-        seasons.append(seasonnumber)
+        try:
+            seasonnumber = season["season"]
+            seasons.append(seasonnumber)
+        except:
+            print("error: no season found, maybe special episode")
 
     print(seasons)
     return seasons, jsonseries
@@ -179,7 +182,7 @@ def rarbgsearchmovie(imdbID):
             time.sleep(3)
             count += 1 
     if notworked:
-        return "404 No Movies have been found"
+        return False
     else:
         return downloadlinks
 
@@ -225,7 +228,6 @@ def rarbgSearchEpisode(seriestitle, season, episode):
 
     searchQuery = "{0}%S{1}E{2}".format(seriestitle, season, episode)
     
-
     token = session.get(torrentapi, headers=agent).text
     token = json.loads(token)
     token = token["token"]
@@ -304,12 +306,13 @@ def getSeries(imdbID, season):
         return downloadlinks 
 
     for torrent in downloadlinks:
-        downloadSize = torrent["size"]
-        seeders = torrent["seeders"]
-        seriesTitle = torrent["episode_info"]["title"]
-        print(seeders)
+        try:
+            seriesTitle = torrent["episode_info"]["title"]
+        except:
+            seriesTitle = "torrent has no title attribute"
         print(seriesTitle)
-        if "Season Pack {0}".format(season) in seriesTitle :
+        if "Season Pack {0}".format(season) in seriesTitle:
+            seeders = torrent["seeders"]
             scores.append(seeders)
         else:
             scores.append(0)

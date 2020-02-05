@@ -64,12 +64,13 @@ async def movie(ctx, *args):
 @client.command(pass_context = True)
 async def show(ctx, *args):
     args = ' '.join(args) 
-    messages = []   
+    messages = []
+    messages.append(ctx.message)   
     if ctx.message.channel.id == discordChannelId:
         imdbIDs, seriestitles, seriesposters, downloaded, years  = imdbSeriesSearch(str(args))
 
         embed = filmembed(seriestitles,downloaded, imdbIDs, years, ctx) 
-        await ctx.send(embed=embed)
+        messages.append(await ctx.send(embed=embed))
         
         try:
             option = await client.wait_for('message', timeout=45, check=check(ctx.author))
@@ -80,6 +81,7 @@ async def show(ctx, *args):
             return
 
         if "!show" in option.content:
+            await deleteMessages(messages)
             return
 
         try:
@@ -95,6 +97,7 @@ async def show(ctx, *args):
 
         else:
             messages.append(await ctx.send("Number is not in Range. Start over"))
+            await deleteMessages(messages)
             return
 
 
@@ -103,6 +106,7 @@ async def show(ctx, *args):
             messages.append(option)
         except asyncio.TimeoutError:
             messages.append(await ctx.send("Time is up. Please start over"))
+            await deleteMessages(messages)
             return
 
         if "!show" in option.content:
@@ -115,10 +119,11 @@ async def show(ctx, *args):
         if optionchoosenSeries <= len(seasons) and optionchoosenSeries >= 1:
             optionchoosenSeries = optionchoosenSeries - 1
             episodes, inPlex = checkEpisodes(jsonseries ,seasons[optionchoosenSeries], imdbIDs[optionchoosen], seriestitles[optionchoosen])
-            embed = episodeEmbed(episodes, inPlex, seriestitles[optionchoosen], seriesposters[optionchoosen], ctx)
+            embed = episodeEmbed(episodes, inPlex, seriestitles[optionchoosen], seriesposters[optionchoosen], imdbIDs[optionchoosen],  ctx)
             messages.append(await ctx.send(embed=embed))
         else:
             messages.append(await ctx.send("Number is not in Range. Start over"))
+            await deleteMessages(messages)
             return
         
         try:
@@ -126,6 +131,7 @@ async def show(ctx, *args):
             messages.append(option)
         except asyncio.TimeoutError:
             messages.append(await ctx.send("Time is up. Please start over"))
+            await deleteMessages(messages)
             return
 
         if "!episode" in option.content:
@@ -134,11 +140,13 @@ async def show(ctx, *args):
             optionchoosenEpisode = int(option.content)
         except:
             messages.append(await ctx.send("Please provide a valid Option"))
+            await deleteMessages(messages)
         if optionchoosenEpisode <= len(episodes) and optionchoosenEpisode >= 0:
             embed = chosenSeriesEmbed(seriestitles[optionchoosen], seriesposters[optionchoosen], imdbIDs[optionchoosen], seasons[optionchoosenSeries], optionchoosenEpisode, ctx)
-            await ctx.send(embed=embed) 
+            await ctx.send(embed=embed)
         else:
             messages.append(await ctx.send("Number is not in Range. Start over"))
+            await deleteMessages(messages)
             return
 
         downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = downloadShow(imdbIDs[optionchoosen], seasons[optionchoosenSeries], optionchoosenEpisode, seriestitles[optionchoosen]) 
@@ -153,7 +161,7 @@ async def show(ctx, *args):
             await ctx.send(embed=embed) # Fix this errorhandling
 
         embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, seriesposters, optionchoosen, ctx)
-        message = await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
         await deleteMessages(messages)
         #startDownload(downloadlink, downloadcategory) #Just for testing put it over embed again
         #await asyncio.sleep(10)
