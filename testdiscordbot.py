@@ -153,7 +153,6 @@ async def show(ctx, *args):
 
         embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, seriesposters, optionchoosen, ctx)
         message = await ctx.send(embed=embed)
-        await asyncio.sleep(10)
         await deleteMessages(messages)
         #startDownload(downloadlink, downloadcategory) #Just for testing put it over embed again
         #await asyncio.sleep(10)
