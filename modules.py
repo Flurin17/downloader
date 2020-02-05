@@ -46,7 +46,6 @@ def searchPlexName(imdb, season, episodenumber, seriesTitle):
     media = []
     season = int(season) + 1
     plex = PlexServer(baseurl, token)
-    titleurl = "com.plexapp.agents.imdb://{0}?lang=en".format(imdb)
     media = plex.library.search(title=seriesTitle)
     print(media)
     if not media:
