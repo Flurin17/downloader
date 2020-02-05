@@ -125,7 +125,7 @@ def imdbSeriesSearch(imdb):
                 years.append(result["year"])
                 seriestitles.append(result["title"])
                 seriesposters.append(result["image"]["url"])
-                downloaded.append(searchplex(imdbID))
+                downloaded.append(searchplexMovie(imdbID))
 
         except:
             print("This Result is not a series")

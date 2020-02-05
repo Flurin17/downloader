@@ -70,7 +70,7 @@ async def show(ctx, *args):
 
         embed = filmembed(seriestitles,downloaded, imdbIDs, years, ctx) 
         await ctx.send(embed=embed)
-        messages.append(message)
+        
         try:
             option = await client.wait_for('message', timeout=45, check=check(ctx.author))
             messages.append(option)
