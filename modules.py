@@ -40,17 +40,24 @@ def searchplex(imdbId):
     print(media)
     return found
 
-def searchPlexName(EpisodeName):
+def searchPlexName(imdb, season, episodenumber):
     baseurl = plexBaseUrl
     token = plexToken
     media = []
+    season = int(season) + 1
     plex = PlexServer(baseurl, token)
-    media = plex.library.search(title=EpisodeName)
+    titleurl = "com.plexapp.agents.imdb://{0}?lang=en".format(imdb)
+    media = plex.library.search(guid=titleurl)
+    print(media)
     if not media:
         found = False
     else:
-        found = True
-    print(media)
+        try:
+            plexSeason = media[0].episode(title=None,season=int(season), episode=int(episodenumber))
+            found = True
+        except:
+            found = False
+    print(plexSeason)
     return found
 
 def updateplex():
@@ -295,7 +302,7 @@ def getSeries(imdbID, season):
     print("User has chosen season {0}".format(season))
     downloadlinks = rarbgSearchSeries(imdbID)
     if downloadlinks == "404 No Movies have been found":
-        return
+        return downloadlinks 
 
     for torrent in downloadlinks:
         downloadSize = torrent["size"]
@@ -329,7 +336,7 @@ def getEpisode(imdbID, season, episode, seriestitle):
     print("User has chosen season {0} and Epsiode {1}".format(season, episode))
     downloadlinks = rarbgSearchEpisode(seriestitle, season, episode)
     if downloadlinks == "404 No Movies have been found":
-        return
+        return downloadlinks
 
     for torrent in downloadlinks:
         downloadSize = torrent["size"]
@@ -363,7 +370,7 @@ def downloadShow(imdbID, season, episode, seriestitle):
     else:
         return getEpisode(imdbID, season, episode, seriestitle)
 
-def checkEpisodes(jsonseries, season):
+def checkEpisodes(jsonseries, season, imdb):
     episodes1 = []
     inPlex = []
     season = season - 1 
@@ -371,8 +378,7 @@ def checkEpisodes(jsonseries, season):
     for episode in episodesjson:
         episodenumber = episode["episode"]
         episodes1.append(episodenumber)
-        episodeName = episode["title"]
-        inPlex.append(searchPlexName(episodeName))
+        inPlex.append(searchPlexName(imdb, season,episodenumber))
 
     print(episodes1)
     return episodes1, inPlex 

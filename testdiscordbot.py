@@ -186,7 +186,7 @@ async def show(ctx, *args):
             await ctx.send("Please provide a valid Option")
         if optionchoosenSeries <= len(seasons) and optionchoosenSeries >= 1:
             optionchoosenSeries = optionchoosenSeries - 1
-            episodes, inPlex = checkEpisodes(jsonseries ,seasons[optionchoosenSeries])
+            episodes, inPlex = checkEpisodes(jsonseries ,seasons[optionchoosenSeries], imdbIDs[optionchoosen])
             embed = episodeEmbed(episodes, inPlex, seriestitles[optionchoosen], seriesposters[optionchoosen], ctx)
             await ctx.send(embed=embed)
         else:
