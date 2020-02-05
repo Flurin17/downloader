@@ -40,14 +40,14 @@ def searchplexMovie(imdbId):
     print(media)
     return found
 
-def searchPlexName(imdb, season, episodenumber):
+def searchPlexName(imdb, season, episodenumber, seriesTitle):
     baseurl = plexBaseUrl
     token = plexToken
     media = []
     season = int(season) + 1
     plex = PlexServer(baseurl, token)
     titleurl = "com.plexapp.agents.imdb://{0}?lang=en".format(imdb)
-    media = plex.library.search(guid=titleurl)
+    media = plex.library.search(title=seriesTitle)
     print(media)
     if not media:
         found = False
@@ -368,7 +368,7 @@ def downloadShow(imdbID, season, episode, seriestitle):
     else:
         return getEpisode(imdbID, season, episode, seriestitle)
 
-def checkEpisodes(jsonseries, season, imdb):
+def checkEpisodes(jsonseries, season, imdb, seriesTitle):
     episodes1 = []
     inPlex = []
     season = season - 1 
@@ -376,7 +376,7 @@ def checkEpisodes(jsonseries, season, imdb):
     for episode in episodesjson:
         episodenumber = episode["episode"]
         episodes1.append(episodenumber)
-        inPlex.append(searchPlexName(imdb, season,episodenumber))
+        inPlex.append(searchPlexName(imdb, season,episodenumber, seriesTitle))
 
     print(episodes1)
     return episodes1, inPlex 

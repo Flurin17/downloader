@@ -66,12 +66,11 @@ async def show(ctx, *args):
     args = ' '.join(args) 
     messages = []   
     if ctx.message.channel.id == discordChannelId:
-        messages.append(ctx.message)
         imdbIDs, seriestitles, seriesposters, downloaded, years  = imdbSeriesSearch(str(args))
 
         embed = filmembed(seriestitles,downloaded, imdbIDs, years, ctx) 
-        messages.append(await ctx.send(embed=embed))
-    
+        await ctx.send(embed=embed)
+        messages.append(message)
         try:
             option = await client.wait_for('message', timeout=45, check=check(ctx.author))
             messages.append(option)
@@ -91,7 +90,9 @@ async def show(ctx, *args):
             seasons, jsonseries = imdbSeriesSearchSeason(imdbIDs[optionchoosen])
 
             embed = seasonsEmbed(seasons, seriestitles[optionchoosen], seriesposters[optionchoosen], ctx)
-            messages.append(await ctx.send(embed=embed))
+            message = await ctx.send(embed=embed)
+            messages.append(message)
+
         else:
             messages.append(await ctx.send("Number is not in Range. Start over"))
             return
@@ -113,7 +114,7 @@ async def show(ctx, *args):
             messages.append(await ctx.send("Please provide a valid Option"))
         if optionchoosenSeries <= len(seasons) and optionchoosenSeries >= 1:
             optionchoosenSeries = optionchoosenSeries - 1
-            episodes, inPlex = checkEpisodes(jsonseries ,seasons[optionchoosenSeries], imdbIDs[optionchoosen])
+            episodes, inPlex = checkEpisodes(jsonseries ,seasons[optionchoosenSeries], imdbIDs[optionchoosen], seriestitles[optionchoosen])
             embed = episodeEmbed(episodes, inPlex, seriestitles[optionchoosen], seriesposters[optionchoosen], ctx)
             messages.append(await ctx.send(embed=embed))
         else:
