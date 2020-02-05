@@ -35,6 +35,6 @@ You only need a user which has access to the downloadstation and the directories
 Create a discord bot and add him to a server: https://discordpy.readthedocs.io/en/latest/discord.html<br/>
 Easiest way is to just set administrator rights, but for general safety purposes give the bot only the necessary "Text" permissions
  - Discord Channel ID:<br/>
- Get the channel ID where you want your bot to work. https://github.com/Chikachi/DiscordIntegration/wiki/How-to-get-a-token-and-channel-ID-for-Discord
+ Get the channel ID where you want your bot to accept commands. https://github.com/Chikachi/DiscordIntegration/wiki/How-to-get-a-token-and-channel-ID-for-Discord
  ### cred.py
  - Copy all the gathered data in a cred.py file located in the same directory as the other files.
