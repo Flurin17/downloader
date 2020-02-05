@@ -57,7 +57,6 @@ def searchPlexName(imdb, season, episodenumber):
             found = True
         except:
             found = False
-    print(plexSeason)
     return found
 
 def updateplex():
@@ -382,3 +381,7 @@ def checkEpisodes(jsonseries, season, imdb):
 
     print(episodes1)
     return episodes1, inPlex 
+
+async def deleteMessages(messages):
+    for message in messages:
+        await message.delete()
