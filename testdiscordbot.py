@@ -67,10 +67,16 @@ async def show(ctx, *args):
     messages = []
     messages.append(ctx.message)   
     if ctx.message.channel.id == discordChannelId:
-        imdbIDs, seriestitles, seriesposters, downloaded, years  = imdbSeriesSearch(str(args))
-
-        embed = filmembed(seriestitles,downloaded, imdbIDs, years, ctx) 
-        messages.append(await ctx.send(embed=embed))
+        output = imdbSeriesSearch(str(args))
+        print(type(output))
+        if type(output) is tuple: 
+            imdbIDs, seriestitles, seriesposters, downloaded, years  = output
+            embed = filmembed(seriestitles,downloaded, imdbIDs, years, ctx) 
+            messages.append(await ctx.send(embed=embed))
+        else:
+            messages.append(await ctx.send("Something has gone wrong. Start over"))
+            await deleteMessages(messages)
+            return
         
         try:
             option = await client.wait_for('message', timeout=45, check=check(ctx.author))
@@ -81,6 +87,7 @@ async def show(ctx, *args):
             return
 
         if "!show" in option.content:
+            del messages[-1]
             await deleteMessages(messages)
             return
 
@@ -89,11 +96,16 @@ async def show(ctx, *args):
         except:
             messages.append(await ctx.send("Please provide a valid Option"))
         if optionchoosen <= len(downloaded) and optionchoosen >= 0:
-            seasons, jsonseries = imdbSeriesSearchSeason(imdbIDs[optionchoosen])
-
-            embed = seasonsEmbed(seasons, seriestitles[optionchoosen], seriesposters[optionchoosen], ctx)
-            message = await ctx.send(embed=embed)
-            messages.append(message)
+            output = imdbSeriesSearchSeason(imdbIDs[optionchoosen])
+            if type(output) is tuple:
+                seasons, jsonseries = output
+                embed = seasonsEmbed(seasons, seriestitles[optionchoosen], seriesposters[optionchoosen], ctx)
+                message = await ctx.send(embed=embed)
+                messages.append(message)
+            else:
+                messages.append(await ctx.send("Something has gone wrong. Start over"))
+                await deleteMessages(messages)
+                return
 
         else:
             messages.append(await ctx.send("Number is not in Range. Start over"))
@@ -110,6 +122,8 @@ async def show(ctx, *args):
             return
 
         if "!show" in option.content:
+            del messages[-1]
+            await deleteMessages(messages)
             return
 
         try:
@@ -118,8 +132,9 @@ async def show(ctx, *args):
             messages.append(await ctx.send("Please provide a valid Option"))
         if optionchoosenSeries <= len(seasons) and optionchoosenSeries >= 1:
             optionchoosenSeries = optionchoosenSeries - 1
+
             episodes, inPlex = checkEpisodes(jsonseries ,seasons[optionchoosenSeries], imdbIDs[optionchoosen], seriestitles[optionchoosen])
-            embed = episodeEmbed(episodes, inPlex, seriestitles[optionchoosen], seriesposters[optionchoosen], imdbIDs[optionchoosen],  ctx)
+            embed = episodeEmbed(episodes, inPlex, seriestitles[optionchoosen], seriesposters[optionchoosen], imdbIDs[optionchoosen], seasons[optionchoosenSeries],   ctx)
             messages.append(await ctx.send(embed=embed))
         else:
             messages.append(await ctx.send("Number is not in Range. Start over"))
@@ -134,7 +149,9 @@ async def show(ctx, *args):
             await deleteMessages(messages)
             return
 
-        if "!episode" in option.content:
+        if "!show" in option.content:
+            del messages[-1]
+            await deleteMessages(messages)
             return
         try:
             optionchoosenEpisode = int(option.content)
@@ -149,16 +166,13 @@ async def show(ctx, *args):
             await deleteMessages(messages)
             return
 
-        downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = downloadShow(imdbIDs[optionchoosen], seasons[optionchoosenSeries], optionchoosenEpisode, seriestitles[optionchoosen]) 
-        if downloadlink == "404 No  have been found":
-            embed = discord.Embed(
-                description= "404 - No Torrent could be found!",
-                color=discord.Color.red()
-            )
-            embed.set_author(name="RARBG-Torrent")
-            embed.add_field(name="IMDB-Title", value="Your Season '{0}' isn't on RARBG!".format(seriestitles[optionchoosen]))
-            embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
-            await ctx.send(embed=embed) # Fix this errorhandling
+        output = downloadShow(imdbIDs[optionchoosen], seasons[optionchoosenSeries], optionchoosenEpisode, seriestitles[optionchoosen])
+        if type(output) is tuple:
+            downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = output
+        else:
+            messages.append(embed=rarbgNotFound(seriestitles[optionchoosen], ctx))
+            await deleteMessages(messages)
+            return
 
         embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, seriesposters, optionchoosen, ctx)
         await ctx.send(embed=embed)

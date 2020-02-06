@@ -8,7 +8,7 @@ from plexapi.server import PlexServer
 import os
 from SynDSapi import *
 from cred import *
-from modules import rarbgSearchSeries 
+from modules import getSeries 
 
 def filmembed(movietitles,downloaded, imdbs, years, ctx):
     print(type(downloaded))
@@ -22,7 +22,7 @@ def filmembed(movietitles,downloaded, imdbs, years, ctx):
         if download == False:
             embed.add_field(name=i, value="[{0} ({1})](https://www.imdb.com/title/{2}/)".format(movietitles[i], years[i],imdbs[i]))
         else:
-            embed.add_field(name=i, value="[~~{0} ({1})~~](https://www.imdb.com/title/{2}/)".format(movietitles[i], years[i],imdbs[i]))
+            embed.add_field(name="~~{0}~~".format(i), value="[~~{0} ({1})~~](https://www.imdb.com/title/{2}/)".format(movietitles[i], years[i],imdbs[i]))
         i += 1
     embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
     return embed
@@ -161,7 +161,7 @@ def chosenSeriesEmbed(movietitle, movieposter, imdb, season, episode,  ctx):
 
     return embed
 
-def episodeEmbed(episodes, inPlex, seriestitle, seriesposter, imdb,  ctx):
+def episodeEmbed(episodes, inPlex, seriestitle, seriesposter, imdb, season,  ctx):
     i = 0
     embed = discord.Embed(
         description= seriestitle,
@@ -172,7 +172,7 @@ def episodeEmbed(episodes, inPlex, seriestitle, seriesposter, imdb,  ctx):
     if all(x == True for x in inPlex):
         embed.add_field(name="~~Season Pack~~", value="~~0~~")
     else:
-        exists = rarbgSearchSeries(imdb)
+        exists = getSeries(imdb, season)
         if exists == False:
             embed.add_field(name="**~~Season Pack~~**", value="**~~0~~**")
         else:
@@ -188,3 +188,14 @@ def episodeEmbed(episodes, inPlex, seriestitle, seriesposter, imdb,  ctx):
     embed.set_thumbnail(url=seriesposter)
     embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
     return embed
+
+def rarbgNotFound(seriestitle, ctx):
+    embed = discord.Embed(
+        description= "404 - No Torrent could be found!",
+        color=discord.Color.red()
+    )
+    embed.set_author(name="RARBG-Torrent")
+    embed.add_field(name="IMDB-Title", value="Your Media '{0}' isn't on RARBG!".format(seriestitle))
+    embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
+    return embed
+    

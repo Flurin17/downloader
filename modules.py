@@ -111,10 +111,13 @@ def imdbSeriesSearch(imdb):
         'x-rapidapi-host': "imdb8.p.rapidapi.com",
         'x-rapidapi-key': rapidApiKey
         }
-    response = requests.request("GET", url, headers=headers, params=querystring)
+    try:
+        response = requests.request("GET", url, headers=headers, params=querystring)
+        jsonmseries = json.loads(response.text)
+        results = jsonmseries["results"]
+    except:
+        return "Has not worked"
 
-    jsonmseries = json.loads(response.text)
-    results = jsonmseries["results"]
     for result in results:
         try:
             if result["titleType"] == "tvSeries":
@@ -144,9 +147,11 @@ def imdbSeriesSearchSeason(imdbID):
         'x-rapidapi-host': "imdb8.p.rapidapi.com",
         'x-rapidapi-key': rapidApiKey
         }
-
-    response = requests.request("GET", url, headers=headers, params=querystring)
-    jsonseries = json.loads(response.text)
+    try:
+        response = requests.request("GET", url, headers=headers, params=querystring)
+        jsonseries = json.loads(response.text)
+    except:
+        return "Something has went wrong"
     for season in jsonseries:
         try:
             seasonnumber = season["season"]
@@ -186,18 +191,21 @@ def rarbgsearchmovie(imdbID):
     else:
         return downloadlinks
 
-def rarbgSearchSeries(imdbID):
+def rarbgSearchSeries(imdbID, season):
     agent = {"User-Agent":'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'}
     session = requests.Session()
     torrentapi = "https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=rarbgapi"
     notworked = True
     count = 0
+    if len(str(season)) == 1:
+        season = "0{0}".format(season)
+    seasonquery = "S{0}".format(season)
     token = session.get(torrentapi, headers=agent).text
     token = json.loads(token)
     token = token["token"]
     print(token)
     time.sleep(2.1)
-    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&sort=seeders&limit=100&category=41&format=json_extended&token={1}&app_id=rarbgapi".format(imdbID, token)
+    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&search_string={1}%1080&sort=seeders&limit=100&category=41&format=json_extended&token={2}&app_id=rarbgapi".format(imdbID, seasonquery,  token)
     while notworked and count < 5:
         searchurlresponse = session.get(searchurl, headers=agent)
         print(searchurl)
@@ -207,7 +215,7 @@ def rarbgSearchSeries(imdbID):
             notworked = False
             print("Movies have been found")
         except:
-            time.sleep(2.1)
+            time.sleep(2.3)
             count += 1 
     if notworked:
         return "404 No Movies have been found"
@@ -233,7 +241,7 @@ def rarbgSearchEpisode(seriestitle, season, episode):
     token = token["token"]
     print(token)
     time.sleep(2.1)
-    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string={0}&sort=seeders&limit=100&category=41&format=json_extended&token={1}&app_id=rarbgapi".format(searchQuery, token)
+    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string={0}%1080&sort=seeders&limit=100&category=41&format=json_extended&token={1}&app_id=rarbgapi".format(searchQuery, token)
     while notworked and count < 5:
         searchurlresponse = session.get(searchurl, headers=agent)
         print(searchurl)
@@ -256,7 +264,7 @@ def getmagnet(imdbID):
 
     downloadlinks = rarbgsearchmovie(imdbID)
     if downloadlinks == "404 No Movies have been found":
-        return
+        return 
     
     for torrent in downloadlinks:
         downloadsize = torrent["size"]
@@ -301,7 +309,7 @@ def getSeries(imdbID, season):
     scores =[]
     print(imdbID)
     print("User has chosen season {0}".format(season))
-    downloadlinks = rarbgSearchSeries(imdbID)
+    downloadlinks = rarbgSearchSeries(imdbID, season)
     if downloadlinks == "404 No Movies have been found":
         return downloadlinks 
 
@@ -318,17 +326,19 @@ def getSeries(imdbID, season):
             scores.append(0)
 
     position =  scores.index(max(scores))
-
-    downloadlink = downloadlinks[position]["download"]
-    downloadname = downloadlinks[position]["title"]
-    downloadcategory = downloadlinks[position]["category"]
-    seeders = downloadlinks[position]["seeders"]
-    leechers = downloadlinks[position]["leechers"]
-    downloadsize =  str(round((downloadlinks[position]["size"]/1000000000),2))
-    downloadpage = downloadlinks[position]["info_page"]
-    print(downloadname)
-    print(scores)
-    return downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers
+    if max(scores) <= 0:
+        return False
+    else:
+        downloadlink = downloadlinks[position]["download"]
+        downloadname = downloadlinks[position]["title"]
+        downloadcategory = downloadlinks[position]["category"]
+        seeders = downloadlinks[position]["seeders"]
+        leechers = downloadlinks[position]["leechers"]
+        downloadsize =  str(round((downloadlinks[position]["size"]/1000000000),2))
+        downloadpage = downloadlinks[position]["info_page"]
+        print(downloadname)
+        print(scores)
+        return downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers
    
 def getEpisode(imdbID, season, episode, seriestitle):
     scores =[]
@@ -366,9 +376,19 @@ def getEpisode(imdbID, season, episode, seriestitle):
 
 def downloadShow(imdbID, season, episode, seriestitle):
     if episode == 0:
-        return getSeries(imdbID, season)
+        output = getSeries(imdbID, season)
+        if type(output) == tuple:
+            downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = output
+            return output
+        else:
+            return "not worked"
     else:
-        return getEpisode(imdbID, season, episode, seriestitle)
+        output = getEpisode(imdbID, season, episode, seriestitle)
+        if type(output) == tuple:
+            downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = output
+            return output
+        else:
+            return "not worked"
 
 def checkEpisodes(jsonseries, season, imdb, seriesTitle):
     episodes1 = []
@@ -386,4 +406,8 @@ def checkEpisodes(jsonseries, season, imdb, seriesTitle):
 async def deleteMessages(messages):
     await asyncio.sleep(10)
     for message in messages:
-        await message.delete()
+        try:
+            await message.delete()
+        except:
+            print("Message has not been found to be deleted")
+    print("All Messages deleted")
