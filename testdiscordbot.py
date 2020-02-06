@@ -66,7 +66,8 @@ async def movie(ctx, *args):
             return
         
         embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, movieposters, optionchoosen, ctx)
-        await ctx.send(embed=embed)
+        message = await ctx.send(embed=embed)
+        await deleteMessages(messages)
         try:
             Worked = startDownload(downloadlink, downloadcategory) 
         except:
@@ -74,7 +75,7 @@ async def movie(ctx, *args):
 
         if Worked:
             print("Start updating torrent embed")
-            #client.loop.create_task(update(message.id, downloadlink, ctx))
+            client.loop.create_task(update(message.id, downloadlink, ctx))
 
         else:
             messages.append(ctx.send("Failed to add Torrent to diskstation"))
@@ -159,7 +160,7 @@ async def show(ctx, *args):
             optionchoosenSeries = optionchoosenSeries - 1
 
             episodes, inPlex = checkEpisodes(jsonseries ,seasons[optionchoosenSeries], imdbIDs[optionchoosen], seriestitles[optionchoosen])
-            embed = episodeEmbed(episodes, inPlex, seriestitles[optionchoosen], seriesposters[optionchoosen], imdbIDs[optionchoosen], seasons[optionchoosenSeries],   ctx)
+            embed = episodeEmbed(episodes, inPlex, seriestitles[optionchoosen], seriesposters[optionchoosen], imdbIDs[optionchoosen], seasons[optionchoosenSeries], ctx)
             messages.append(await ctx.send(embed=embed))
         else:
             messages.append(await ctx.send("Number is not in Range. Start over"))
@@ -187,7 +188,7 @@ async def show(ctx, *args):
 
         if optionchoosenEpisode <= len(episodes) and optionchoosenEpisode >= 0:
             embed = chosenSeriesEmbed(seriestitles[optionchoosen], seriesposters[optionchoosen], imdbIDs[optionchoosen], seasons[optionchoosenSeries], optionchoosenEpisode, ctx)
-            await ctx.send(embed=embed)
+            messages.append(await ctx.send(embed=embed))
         else:
             messages.append(await ctx.send("Number is not in Range. Start over"))
             await deleteMessages(messages)
@@ -203,16 +204,16 @@ async def show(ctx, *args):
             return
 
         embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, seriesposters, optionchoosen, ctx)
-        await ctx.send(embed=embed)
+        message = await ctx.send(embed=embed)
         await deleteMessages(messages)
         try:
-            Worked = startDownload(downloadlink, downloadcategory) #Just for testing put it over embed again
+            Worked = startDownload(downloadlink, downloadcategory)
         except:
             Worked = False
 
         if Worked == True:
             print("Start updating torrent embed")
-            #client.loop.create_task(update(message.id, downloadlink, ctx))
+            client.loop.create_task(update(message.id, downloadlink, ctx))
         else:
             messages.append(ctx.send("Failed to add Torrent to diskstation"))
 
