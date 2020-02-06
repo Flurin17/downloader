@@ -47,6 +47,7 @@ def startDownload(magnetUrl, category):
             if json.loads(createTask.text)['success'] == True:
                 print('Successfully added Torrent')
                 sess.get(urlDisco)
+                return True
 
 
 def checkDownload(magnetlink):

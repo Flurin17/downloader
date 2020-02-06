@@ -17,45 +17,68 @@ async def movie(ctx, *args):
     messages = []
     messages.append(ctx.message) 
     if ctx.message.channel.id == discordChannelId:
-        imdbIDs, movietitles, movieposters, downloaded, years  = imdbsearch(str(args))
-        embed = filmembed(movietitles,downloaded, imdbIDs, years, ctx) 
-        await ctx.send(embed=embed)
+        output = imdbsearch(str(args))
+        if type(output) is tuple and output[3] != []: 
+            imdbIDs, movietitles, movieposters, downloaded, years  = output
+            embed = filmembed(movietitles,downloaded, imdbIDs, years, ctx) 
+            messages.append(await ctx.send(embed=embed))
         
-        try:
-            option = await client.wait_for('message', timeout=45, check=check(ctx.author))
-        except asyncio.TimeoutError:
-            await ctx.send("Time is up. Please start over")
+        else:
+            messages.append(await ctx.send("Something has gone wrong. Start over"))
+            await deleteMessages(messages)
             return
 
+        try:
+            option = await client.wait_for('message', timeout=45, check=check(ctx.author))
+            messages.append(option)
+        except asyncio.TimeoutError:
+            messages.append(await ctx.send("Time is up. Please start over"))
+            await deleteMessages(messages)
+            return
+        
         if "!movie" in option.content:
+            del messages[-1]
+            await deleteMessages(messages)
             return
 
         try:
             optionchoosen = int(option.content)
         except:
-            await ctx.send("Please provide a valid Option")
-        if optionchoosen <= len(downloaded) and optionchoosen >= 0:
+            messages.append(await ctx.send("Please provide a valid Option"))
+            await deleteMessages(messages)
+            return
+
+        if optionchoosen <= len(downloaded) and optionchoosen >= 0: 
             embed = chosenfilmebed(movietitles[optionchoosen], movieposters[optionchoosen], imdbIDs[optionchoosen], ctx)
-            await ctx.send(embed=embed)
+            messages.append(await ctx.send(embed=embed))
         else:
-            await ctx.send("Number is not in Range")
+            messages.append(await ctx.send("Number is not in Range"))
+            await deleteMessages(messages)
+            return
 
-        downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = getmagnet(imdbIDs[optionchoosen]) 
-        if downloadlink == "404 No Movies have been found":
-            embed = discord.Embed(
-                description= "404 - No Torrent could be found!",
-                color=discord.Color.red()
-            )
-            embed.set_author(name="RARBG-Torrent")
-            embed.add_field(name="IMDB-Title", value="Your movie '{0}' isn't on RARBG!".format(movietitles[optionchoosen]))
-            embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
+        output = getmagnet(imdbIDs[optionchoosen]) 
+        if type(output) is tuple:
+            downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = output
+        else:
+            embed = rarbgNotFound(movietitles[optionchoosen], ctx)
             await ctx.send(embed=embed)
-        startDownload(downloadlink, downloadcategory) 
+            await deleteMessages(messages)
+            return
+        
         embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, movieposters, optionchoosen, ctx)
-        message = await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
+        try:
+            Worked = startDownload(downloadlink, downloadcategory) 
+        except:
+            Worked = False
 
-        await asyncio.sleep(10)
-        client.loop.create_task(update(message.id, downloadlink, ctx))
+        if Worked:
+            print("Start updating torrent embed")
+            #client.loop.create_task(update(message.id, downloadlink, ctx))
+
+        else:
+            messages.append(ctx.send("Failed to add Torrent to diskstation"))
+
 
     else:
         print("Wrong channel")
@@ -160,6 +183,8 @@ async def show(ctx, *args):
         except:
             messages.append(await ctx.send("Please provide a valid Option"))
             await deleteMessages(messages)
+            return
+
         if optionchoosenEpisode <= len(episodes) and optionchoosenEpisode >= 0:
             embed = chosenSeriesEmbed(seriestitles[optionchoosen], seriesposters[optionchoosen], imdbIDs[optionchoosen], seasons[optionchoosenSeries], optionchoosenEpisode, ctx)
             await ctx.send(embed=embed)
@@ -181,14 +206,16 @@ async def show(ctx, *args):
         await ctx.send(embed=embed)
         await deleteMessages(messages)
         try:
-            #startDownload(downloadlink, downloadcategory) #Just for testing put it over embed again
-            Worked = True
+            Worked = startDownload(downloadlink, downloadcategory) #Just for testing put it over embed again
         except:
-            ctx.send("Failed to add Torrent to diskstation")
             Worked = False
+
         if Worked == True:
             print("Start updating torrent embed")
             #client.loop.create_task(update(message.id, downloadlink, ctx))
+        else:
+            messages.append(ctx.send("Failed to add Torrent to diskstation"))
+
     else:
         print("Wrong channel")
         embed = wrongchannelembed(args)

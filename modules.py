@@ -173,7 +173,7 @@ def rarbgsearchmovie(imdbID):
     token = token["token"]
     print(token)
     time.sleep(2.6)
-    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&sort=seeders&limit=100&category=44&format=json_extended&token={1}&app_id=rarbgapi".format(imdbID, token)
+    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&search_string=1080p&sort=seeders&limit=100&category=44&format=json_extended&token={1}&app_id=rarbgapi".format(imdbID, token)
 
     while notworked and count < 5:
         searchurlresponse = session.get(searchurl, headers=agent)
@@ -263,8 +263,8 @@ def getmagnet(imdbID):
     print(imdbID)
 
     downloadlinks = rarbgsearchmovie(imdbID)
-    if downloadlinks == "404 No Movies have been found":
-        return 
+    if downloadlinks == False:
+        return "404 not found"
     
     for torrent in downloadlinks:
         downloadsize = torrent["size"]
