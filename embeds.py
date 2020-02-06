@@ -83,6 +83,7 @@ def updatetorrentembed(downloadname, downloadpage, downloadsize, seeders, leeche
 async def update(messageid, magnetlink, ctx):
     status = 'downloading'
     firstTime = True
+    await asyncio.sleep(10)
     while status == 'downloading':
         status, downloadSpeed, synologyDownloaded, size, seeders, leechers  = checkDownload(magnetlink)
 
@@ -92,7 +93,6 @@ async def update(messageid, magnetlink, ctx):
             synologyDownloaded = 1
         if downloadSpeed < 1:
             downloadSpeed = 1
-
 
         downloadTime = (size-synologyDownloaded)/downloadSpeed/60
         downloadTimeMin = int(downloadTime)
@@ -174,7 +174,7 @@ def episodeEmbed(episodes, inPlex, seriestitle, seriesposter, imdb, season,  ctx
     else:
         exists = getSeries(imdb, season)
         if exists == False:
-            embed.add_field(name="**~~Season Pack~~**", value="**~~0~~**")
+            embed.add_field(name="**~~Season Pack~~**", value="**~~Unavailable~~**")
         else:
             embed.add_field(name="**Season Pack**", value="**0**")
 

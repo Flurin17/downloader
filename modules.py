@@ -112,7 +112,7 @@ def imdbSeriesSearch(imdb):
         'x-rapidapi-key': rapidApiKey
         }
     try:
-        response = requests.request("GET", url, headers=headers, params=querystring)
+        response = requests.request("GET", url, headers=headers, params=querystring, timeout=5)
         jsonmseries = json.loads(response.text)
         results = jsonmseries["results"]
     except:
@@ -168,7 +168,7 @@ def rarbgsearchmovie(imdbID):
     torrentapi = "https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=rarbgapi"
     notworked = True
     count = 0
-    token = session.get(torrentapi, headers=agent).text
+    token = session.get(torrentapi, headers=agent, timeout=5).text
     token = json.loads(token)
     token = token["token"]
     print(token)
@@ -200,12 +200,12 @@ def rarbgSearchSeries(imdbID, season):
     if len(str(season)) == 1:
         season = "0{0}".format(season)
     seasonquery = "S{0}".format(season)
-    token = session.get(torrentapi, headers=agent).text
+    token = session.get(torrentapi, headers=agent, timeout=5).text
     token = json.loads(token)
     token = token["token"]
     print(token)
     time.sleep(2.1)
-    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&search_string={1}%1080&sort=seeders&limit=100&category=41&format=json_extended&token={2}&app_id=rarbgapi".format(imdbID, seasonquery,  token)
+    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb={0}&search_string={1}%1080p&sort=seeders&limit=100&category=41&format=json_extended&token={2}&app_id=rarbgapi".format(imdbID, seasonquery,  token)
     while notworked and count < 5:
         searchurlresponse = session.get(searchurl, headers=agent)
         print(searchurl)
@@ -236,14 +236,14 @@ def rarbgSearchEpisode(seriestitle, season, episode):
 
     searchQuery = "{0}%S{1}E{2}".format(seriestitle, season, episode)
     
-    token = session.get(torrentapi, headers=agent).text
+    token = session.get(torrentapi, headers=agent, timeout=5).text
     token = json.loads(token)
     token = token["token"]
     print(token)
     time.sleep(2.1)
-    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string={0}%1080&sort=seeders&limit=100&category=41&format=json_extended&token={1}&app_id=rarbgapi".format(searchQuery, token)
+    searchurl = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string={0}%1080p&sort=seeders&limit=100&category=41&format=json_extended&token={1}&app_id=rarbgapi".format(searchQuery, token)
     while notworked and count < 5:
-        searchurlresponse = session.get(searchurl, headers=agent)
+        searchurlresponse = session.get(searchurl, headers=agent, timeout=5)
         print(searchurl)
         searchurljson = json.loads(searchurlresponse.text)
         try:
@@ -311,7 +311,7 @@ def getSeries(imdbID, season):
     print("User has chosen season {0}".format(season))
     downloadlinks = rarbgSearchSeries(imdbID, season)
     if downloadlinks == "404 No Movies have been found":
-        return downloadlinks 
+        return False 
 
     for torrent in downloadlinks:
         try:
@@ -405,7 +405,7 @@ def checkEpisodes(jsonseries, season, imdb, seriesTitle):
 
 async def deleteMessages(messages):
     await asyncio.sleep(10)
-    for message in messages:
+    for message in reversed(messages):
         try:
             await message.delete()
         except:

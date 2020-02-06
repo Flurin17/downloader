@@ -13,7 +13,9 @@ import os
 client = commands.Bot(command_prefix='!')
 @client.command(pass_context = True)
 async def movie(ctx, *args):
-    args = ' '.join(args)   
+    args = ' '.join(args)
+    messages = []
+    messages.append(ctx.message) 
     if ctx.message.channel.id == discordChannelId:
         imdbIDs, movietitles, movieposters, downloaded, years  = imdbsearch(str(args))
         embed = filmembed(movietitles,downloaded, imdbIDs, years, ctx) 
@@ -69,7 +71,7 @@ async def show(ctx, *args):
     if ctx.message.channel.id == discordChannelId:
         output = imdbSeriesSearch(str(args))
         print(type(output))
-        if type(output) is tuple: 
+        if type(output) is tuple and output[3] != []: 
             imdbIDs, seriestitles, seriesposters, downloaded, years  = output
             embed = filmembed(seriestitles,downloaded, imdbIDs, years, ctx) 
             messages.append(await ctx.send(embed=embed))
@@ -170,17 +172,23 @@ async def show(ctx, *args):
         if type(output) is tuple:
             downloadlink, downloadname, downloadsize, downloadcategory, downloadpage, seeders, leechers = output
         else:
-            messages.append(embed=rarbgNotFound(seriestitles[optionchoosen], ctx))
+            embed = rarbgNotFound(seriestitles[optionchoosen], ctx)
+            await ctx.send(embed=embed)
             await deleteMessages(messages)
             return
 
         embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, seriesposters, optionchoosen, ctx)
         await ctx.send(embed=embed)
         await deleteMessages(messages)
-        #startDownload(downloadlink, downloadcategory) #Just for testing put it over embed again
-        #await asyncio.sleep(10)
-        #client.loop.create_task(update(message.id, downloadlink, ctx))
-
+        try:
+            #startDownload(downloadlink, downloadcategory) #Just for testing put it over embed again
+            Worked = True
+        except:
+            ctx.send("Failed to add Torrent to diskstation")
+            Worked = False
+        if Worked == True:
+            print("Start updating torrent embed")
+            #client.loop.create_task(update(message.id, downloadlink, ctx))
     else:
         print("Wrong channel")
         embed = wrongchannelembed(args)
