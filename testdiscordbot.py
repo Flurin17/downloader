@@ -208,7 +208,7 @@ async def show(ctx, *args):
             Worked = startDownload(downloadlink, downloadcategory)
             embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, movieposters, optionchoosen, ctx)
             message = await ctx.send(embed=embed)
-            
+
         except:
             Worked = False
 
@@ -216,7 +216,7 @@ async def show(ctx, *args):
             print("Start updating torrent embed")
             client.loop.create_task(update(message.id, downloadlink, ctx))
         else:
-            messages.append(ctx.send("Failed to add Torrent to diskstation"))
+            messages.append(await ctx.send("Failed to add Torrent to diskstation"))
 
     else:
         print("Wrong channel")
