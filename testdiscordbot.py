@@ -65,11 +65,11 @@ async def movie(ctx, *args):
             await deleteMessages(messages)
             return
         
-        embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, movieposters, optionchoosen, ctx)
-        message = await ctx.send(embed=embed)
         await deleteMessages(messages)
         try:
-            Worked = startDownload(downloadlink, downloadcategory) 
+            Worked = startDownload(downloadlink, downloadcategory)
+            embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, movieposters, optionchoosen, ctx)
+            message = await ctx.send(embed=embed) 
         except:
             Worked = False
 
@@ -78,7 +78,7 @@ async def movie(ctx, *args):
             client.loop.create_task(update(message.id, downloadlink, ctx))
 
         else:
-            messages.append(ctx.send("Failed to add Torrent to diskstation"))
+            messages.append(await ctx.send("Failed to add Torrent to diskstation"))
 
 
     else:
@@ -203,11 +203,12 @@ async def show(ctx, *args):
             await deleteMessages(messages)
             return
 
-        embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, seriesposters, optionchoosen, ctx)
-        message = await ctx.send(embed=embed)
         await deleteMessages(messages)
         try:
             Worked = startDownload(downloadlink, downloadcategory)
+            embed = torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, movieposters, optionchoosen, ctx)
+            message = await ctx.send(embed=embed)
+            
         except:
             Worked = False
 
