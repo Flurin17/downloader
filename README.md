@@ -37,4 +37,4 @@ Easiest way is to just set administrator rights, but for general safety purposes
  - Discord Channel ID:<br/>
  Get the channel ID where you want your bot to accept commands. https://github.com/Chikachi/DiscordIntegration/wiki/How-to-get-a-token-and-channel-ID-for-Discord
  ### cred.py
- - Copy all the gathered data in a cred.py file located in the same directory as the other files.
+ - Copy all the gathered data in a cred.py file located in the same directory as downloadermain.py.
