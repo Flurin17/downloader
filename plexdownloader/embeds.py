@@ -6,9 +6,9 @@ import json
 import time
 from plexapi.server import PlexServer
 import os
-from SynDSapi import *
-from cred import *
-from modules import getSeries 
+from plexdownloader.SynDSapi import *
+from plexdownloader.cred import *
+from plexdownloader.modules import getSeries 
 
 def filmembed(movietitles,downloaded, imdbs, years, ctx):
     print(type(downloaded))
@@ -44,7 +44,7 @@ def check(author):
         return message.author == author 
     return inner_check
 
-def torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, movieposters, optionchoosen, ctx):
+def torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, seriesposter, optionchoosen, ctx):
     embed = discord.Embed(
             description= "A Torrent has been found and added!",
             color=discord.Color.green()
@@ -53,7 +53,7 @@ def torrentembed(downloadname, downloadpage, downloadsize, seeders, leechers, mo
     embed.add_field(name="Name", value=("[{0}]({1}&app_id=rarbgapi)").format(downloadname, downloadpage))
     embed.add_field(name="Size", value="{0} GB".format(downloadsize))
     embed.add_field(name="S/L", value="{0}/{1}".format(seeders, leechers))
-    embed.set_thumbnail(url=movieposters[optionchoosen])
+    embed.set_thumbnail(url=seriesposter)
     embed.set_footer(text=("Requested by {0}").format(ctx.message.author))
     return embed
 
@@ -126,7 +126,7 @@ async def update(messageid, magnetlink, ctx):
     embed1.remove_field(index=2)
     embed1.remove_field(index=2)
     embed1.remove_field(index=2)
-    embed1.add_field(name="Tag", value="The Film has been downloaded <@{0}>".format(ctx.message.author.id))
+    embed1.add_field(name="Tag", value="The Torrent has been downloaded <@{0}>".format(ctx.message.author.id))
     await embedmessage.edit(embed=embed1)
 
 def seasonsEmbed(seasons, seriestitle, seriesposter, ctx):
