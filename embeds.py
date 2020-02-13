@@ -9,6 +9,7 @@ import os
 from SynDSapi import *
 from cred import *
 from modules import getSeries 
+from datetime import datetime
 
 def filmembed(movietitles,downloaded, imdbs, years, ctx):
     print(type(downloaded))
@@ -85,8 +86,9 @@ async def update(messageid, magnetlink, ctx):
     firstTime = True
     await asyncio.sleep(10)
     while status == 'downloading':
+        now = datetime.now()
+        time = now.strftime("%H:%M:%S %d/%m/%y")
         status, downloadSpeed, synologyDownloaded, size, seeders, leechers  = checkDownload(magnetlink)
-
         if size < 2:
             size = 2
         if synologyDownloaded < 1:
@@ -117,6 +119,7 @@ async def update(messageid, magnetlink, ctx):
         embed1.set_field_at(index=3,name=embed1.fields[3].name,value="{0} GB".format(synologyDownloadedGB))
         embed1.set_field_at(index=4,name=embed1.fields[4].name,value="{0} MB/s".format(downloadSpeedMB))
         embed1.set_field_at(index=5,name=embed1.fields[5].name,value="{0}min {1}s".format(downloadTimeMin, downloadTimeSec))
+        embed1.set_footer(text=("Requested by {0} | {1}").format(ctx.message.author, time ))
         await embedmessage.edit(embed=embed1)
         await asyncio.sleep(10) # 10 sec
         
@@ -126,8 +129,11 @@ async def update(messageid, magnetlink, ctx):
     embed1.remove_field(index=2)
     embed1.remove_field(index=2)
     embed1.remove_field(index=2)
-    embed1.add_field(name="Tag", value="The Film has been downloaded <@{0}>".format(ctx.message.author.id))
+    embed1.add_field(name="Status", value="Downloaded")
     await embedmessage.edit(embed=embed1)
+    notify = await ctx.send("<@{0}> The Film has been downloaded".format(ctx.message.author.id))
+    await asyncio.sleep(1200)
+    notify.delete()
 
 def seasonsEmbed(seasons, seriestitle, seriesposter, ctx):
     embed = discord.Embed(
